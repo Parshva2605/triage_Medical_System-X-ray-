@@ -1,0 +1,48 @@
+# Node modules (do NOT commit dependencies)
+node_modules/
+
+# Dependency lock files (optional for some teams)
+package-lock.json
+yarn.lock
+
+# VS Code settings
+.vscode/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Build output
+dist/
+build/
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# TypeScript output (if used)
+*.tsbuildinfo
+
+# Model files (large, not for git)
+*.h5
+
+# Uploaded images and user files (do not commit uploads)
+uploads/
+
+# Python cache
+__pycache__/

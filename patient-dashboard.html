@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #556CD6;
+            --secondary-color: #E8EAF6;
+            --text-color: #333;
+            --light-bg: #f5f7fa;
+            --header-color: #293688;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .logo svg {
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-link.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            color: var(--header-color);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .welcome-box {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .welcome-text {
+            color: var(--header-color);
+            margin-bottom: 10px;
+        }
+        
+        .welcome-description {
+            color: #6b7280;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .user-info {
+            margin-top: 20px;
+            background-color: #f9fafc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .user-info p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        
+        .label {
+            font-weight: bold;
+            color: #7f8c8d;
+            width: 80px;
+            display: inline-block;
+        }
+        
+        /* Feature Cards */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+            background-color: #f0f4ff;
+            color: var(--primary-color);
+        }
+        
+        .feature-content {
+            padding: 20px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--header-color);
+            margin-bottom: 10px;
+        }
+        
+        .feature-description {
+            color: #6b7280;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .feature-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        
+        .feature-btn:hover {
+            background-color: #3f51b5;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #ffffff;
+            padding: 30px 20px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: auto;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo svg {
+            margin-right: 10px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-link {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .copyright {
+            width: 100%;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        /* Prescriptions Styles */
+        .prescriptions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .prescription-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .prescription-header {
+            padding: 15px;
+            background-color: #27ae60;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .prescription-header h3 {
+            margin: 0;
+        }
+        
+        .prescription-date {
+            font-size: 14px;
+        }
+        
+        .prescription-body {
+            padding: 20px;
+        }
+        
+        .prescription-info {
+            margin-bottom: 20px;
+        }
+        
+        .prescription-info p {
+            margin: 5px 0;
+        }
+        
+        .medications h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .medication-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .medication-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #27ae60;
+            border-radius: 4px;
+        }
+        
+        .medication-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #27ae60;
+        }
+        
+        .medication-details {
+            font-size: 14px;
+        }
+        
+        .medication-details span {
+            display: inline-block;
+            margin-right: 15px;
+        }
+        
+        .medication-instructions {
+            margin-top: 8px;
+        }
+        
+        .additional-instructions {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .additional-instructions h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .empty-state h3 {
+            margin: 15px 0;
+            color: #555;
+        }
+        
+        .empty-state p {
+            color: #777;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            background-color: #ffebee;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .error-message p {
+            color: #c62828;
+            margin-bottom: 15px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                gap: 10px;
+            }
+            
+            .footer-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-logo {
+                justify-content: center;
+            }
+            
+            .footer-links {
+                justify-content: center;
+            }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .close:hover {
+            opacity: 0.7;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .call-info {
+            margin-bottom: 25px;
+        }
+        
+        .call-info p {
+            margin: 10px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .call-info strong {
+            color: #2c3e50;
+        }
+        
+        .call-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        /* Notification sound */
+        .notification-sound {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <a href="patient-dashboard.html" class="logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 8h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v4H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 4h6v4H9V4zm11 16H4V10h16v10z" fill="#556CD6"/>
+                <path d="M11 14h2v2h-2v-2zm0-6h2v4h-2V8z" fill="#556CD6"/>
+            </svg>
+            <span>MediTriage</span>
+        </a>
+        
+        <div class="nav-links">
+            <a href="patient-dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="patient/symptom-intake.html" class="nav-link">Symptom Intake</a>
+            <a href="patient/find-nearby-care.html" class="nav-link">Find Nearby Care</a>
+            <a href="patient/my-prescriptions.html" class="nav-link">My Prescriptions</a>
+            <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">Welcome to Your Dashboard</h1>
+            
+            <div class="welcome-box">
+                <h2 class="welcome-text">Welcome, <span id="patient-name">Patient</span></h2>
+                <p class="welcome-description">
+                    Manage your health journey with MediTriage. Access services, view your records, and connect with healthcare providers.
+                </p>
+                <div class="user-info" id="user-info">
+                    <p><span class="label">Name:</span> <span id="name-display"></span></p>
+                    <p><span class="label">Email:</span> <span id="email-display"></span></p>
+                    <p><span class="label">Mobile:</span> <span id="mobile-display"></span></p>
+                </div>
+            </div>
+            
+            <!-- Feature Cards -->
+            <div class="features">
+                <!-- Symptom Intake Card -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2v-4h-2V9h2V7h2v2h2v4h-2v4z" fill="#556CD6"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">Submit Symptoms</h3>
+                        <p class="feature-description">
+                            Fill out our smart form to get an AI-powered analysis and triage. Upload your chest X-ray for comprehensive chest disease detection.
+                        </p>
+                        <a href="patient/symptom-intake.html" class="feature-btn">Go to Submit Symptoms</a>
+                    </div>
+                </div>
+                
+                <!-- Find Nearby Care Card -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#556CD6"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">Find Nearby Care</h3>
+                        <p class="feature-description">
+                            Locate doctors and hospitals near you based on your current location. Get directions and contact info.
+                        </p>
+                        <a href="patient/find-nearby-care.html" class="feature-btn">Go to Find Nearby Care</a>
+                    </div>
+                </div>
+                
+                <!-- My Prescriptions Card -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H8v-2h2V7h2v4h2v2h-2v4z" fill="#556CD6"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">View Prescriptions</h3>
+                        <p class="feature-description">
+                            Access your e-prescriptions issued by verified doctors. Download and view detailed medication instructions.
+                        </p>
+                        <a href="patient/my-prescriptions.html" class="feature-btn">Go to View Prescriptions</a>
+                    </div>
+                </div>
+                
+                <!-- Video Calls Card -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 7a16 16 0 0 0-6.26-6.26L23 7z"/>
+                            <path d="M1 17a16 16 0 0 0 6.26 6.26L1 17z"/>
+                            <path d="M9 9a3 3 0 0 0 0 6"/>
+                            <path d="M15 9a3 3 0 0 0 0 6"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">Video Calls</h3>
+                        <p class="feature-description">Join scheduled video consultations with your doctor for remote medical care.</p>
+                        <button class="feature-btn" onclick="showVideoCalls()">View Calls</button>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 7a16 16 0 0 0-6.26-6.26L23 7z"/>
+                            <path d="M1 17a16 16 0 0 0 6.26 6.26L1 17z"/>
+                            <path d="M9 9a3 3 0 0 0 0 6"/>
+                            <path d="M15 9a3 3 0 0 0 0 6"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3 class="feature-title">Camera Test</h3>
+                        <p class="feature-description">Test your camera and microphone before joining video calls to ensure everything works properly.</p>
+                        <a href="camera-test.html" class="feature-btn" style="text-decoration: none; display: inline-block;">Test Camera</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabs for Prescriptions and Other Features -->
+            <!-- <div class="tabs">
+                <div class="tab" data-tab="symptom-form">Report Symptoms</div>
+                <div class="tab" data-tab="submissions">My Submissions</div>
+                <div class="tab" data-tab="profile">My Profile</div>
+            </div> -->
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 8h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v4H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 4h6v4H9V4zm11 16H4V10h16v10z" fill="#556CD6"/>
+                    <path d="M11 14h2v2h-2v-2zm0-6h2v4h-2V8z" fill="#556CD6"/>
+                </svg>
+                <span>MediTriage</span>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Us</a>
+                <a href="#" class="footer-link">Help & Support</a>
+            </div>
+            
+            <div class="copyright">
+                © 2025 MediTriage. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Instant Call Popup Modal -->
+    <div id="instantCallModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🚨 Instant Video Call</h2>
+                <span class="close" onclick="closeInstantCallModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="call-info">
+                    <p><strong>Doctor:</strong> <span id="instant-call-doctor"></span></p>
+                    <p><strong>Purpose:</strong> <span id="instant-call-purpose"></span></p>
+                    <p><strong>Duration:</strong> <span id="instant-call-duration"></span> minutes</p>
+                </div>
+                <div class="call-actions">
+                    <button id="joinInstantCall" class="btn-primary">Join Call Now</button>
+                    <button onclick="declineInstantCall()" class="btn-secondary">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audio for notification -->
+    <audio id="callNotification" class="notification-sound">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+    </audio>
+    
+    <script>
+        // Authentication and user data loading
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show loading state
+            document.getElementById('user-info').innerHTML = '<p>Loading your information...</p>';
+            
+            fetch('/api/user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include' // Important for cookies
+            })
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Authentication failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success || data.userType !== 'patient') {
+                    throw new Error('Not authorized as patient');
+                }
+                
+                // Save user data to session storage as backup
+                sessionStorage.setItem('userData', JSON.stringify(data.user));
+                sessionStorage.setItem('userType', data.userType);
+                
+                // Display user information
+                const user = data.user;
+                document.getElementById('patient-name').textContent = user.name || '';
+                
+                const userInfo = document.getElementById('user-info');
+                userInfo.innerHTML = `
+                    <p><span class="label">Name:</span> <span id="name-display">${user.name || ''}</span></p>
+                    <p><span class="label">Email:</span> <span id="email-display">${user.email || ''}</span></p>
+                    <p><span class="label">Mobile:</span> <span id="mobile-display">${user.mobile || 'Not provided'}</span></p>
+                `;
+            })
+            .catch(error => {
+                console.error('Authentication error:', error);
+                
+                // Try to use data from session storage if available
+                const userData = sessionStorage.getItem('userData');
+                const userType = sessionStorage.getItem('userType');
+                
+                if (userData && userType === 'patient') {
+                    // We have backup data, use it
+                    const user = JSON.parse(userData);
+                    document.getElementById('patient-name').textContent = user.name || '';
+                    
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.innerHTML = `
+                        <p><span class="label">Name:</span> <span id="name-display">${user.name || ''}</span></p>
+                        <p><span class="label">Email:</span> <span id="email-display">${user.email || ''}</span></p>
+                        <p><span class="label">Mobile:</span> <span id="mobile-display">${user.mobile || 'Not provided'}</span></p>
+                        <p style="color: orange; margin-top: 10px; font-size: 14px;">
+                            ⚠️ Connection to server lost. Some features may be limited.
+                            <a href="#" id="reconnect-btn" style="color: blue; margin-left: 5px;">Try to reconnect</a>
+                        </p>
+                    `;
+                    
+                    // Add reconnect functionality
+                    document.getElementById('reconnect-btn').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        location.reload();
+                    });
+                } else {
+                    // No backup, show error and redirect
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.innerHTML = `
+                        <p style="color: #e74c3c; font-weight: bold;">
+                            Authentication error. Redirecting to login page...
+                        </p>
+                    `;
+                    
+                    // Redirect after a short delay to show the error message
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+            });
+            
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                // Clear session storage first
+                sessionStorage.removeItem('userData');
+                sessionStorage.removeItem('userType');
+                
+                fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                })
+                .then(() => {
+                    window.location.href = 'index.html';
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    // Still redirect even if there's an error
+                    window.location.href = 'index.html';
+                });
+            });
+        });
+        
+        // Helper function to switch tabs
+        function showTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active');
+                }
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(tabId + '-content').style.display = 'block';
+            
+            // Load data for the specific tab if needed
+            if (tabId === 'prescriptions') {
+                loadPrescriptions();
+            }
+        }
+        
+        // Video Call Functions
+        function showVideoCalls() {
+            fetch('/api/patient/scheduled-calls', {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayVideoCalls(data.calls);
+                } else {
+                    alert('Error loading video calls: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while loading video calls');
+            });
+        }
+        
+        function displayVideoCalls(calls) {
+            if (calls.length === 0) {
+                alert('No scheduled video calls found.');
+                return;
+            }
+            
+            let callsList = 'Scheduled Video Calls:\n\n';
+            calls.forEach(call => {
+                const callDate = new Date(call.callDateTime).toLocaleString();
+                callsList += `📅 Date: ${callDate}\n`;
+                callsList += `👨‍⚕️ Doctor: ${call.doctorName}\n`;
+                callsList += `⏱️ Duration: ${call.callDuration} minutes\n`;
+                callsList += `📝 Purpose: ${call.callPurpose}\n`;
+                callsList += `📊 Status: ${call.status}\n\n`;
+            });
+            
+            alert(callsList);
+        }
+        
+        // Check for incoming calls every 30 seconds
+        setInterval(() => {
+            checkForIncomingCalls();
+        }, 30000);
+        
+        // Check for instant calls every 10 seconds
+        setInterval(() => {
+            checkForInstantCalls();
+        }, 10000);
+        
+        function checkForIncomingCalls() {
+            fetch('/api/patient/scheduled-calls', {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.calls.length > 0) {
+                    data.calls.forEach(call => {
+                        const now = new Date();
+                        const callTime = new Date(call.callDateTime);
+                        const timeDiff = callTime - now;
+                        
+                        // If call is within 2 minutes, show notification
+                        if (timeDiff > 0 && timeDiff <= 2 * 60 * 1000) {
+                            showIncomingCallNotification(call);
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error checking for incoming calls:', error));
+        }
+        
+        function checkForInstantCalls() {
+            fetch('/api/patient/instant-calls', {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.calls.length > 0) {
+                    // Get the most recent instant call
+                    const latestCall = data.calls[0];
+                    
+                    // Check if we haven't already shown this call
+                    const callId = latestCall._id;
+                    if (!sessionStorage.getItem('shownInstantCall_' + callId)) {
+                        showInstantCallPopup(latestCall);
+                        sessionStorage.setItem('shownInstantCall_' + callId, 'true');
+                    }
+                }
+            })
+            .catch(error => console.error('Error checking for instant calls:', error));
+        }
+        
+        function showInstantCallPopup(call) {
+            // Play notification sound
+            const audio = document.getElementById('callNotification');
+            audio.play().catch(e => console.log('Audio play failed:', e));
+            
+            // Update modal content
+            document.getElementById('instant-call-doctor').textContent = call.doctorName;
+            document.getElementById('instant-call-purpose').textContent = call.callPurpose;
+            document.getElementById('instant-call-duration').textContent = call.callDuration;
+            
+            // Show modal
+            document.getElementById('instantCallModal').style.display = 'block';
+            
+            // Add event listener for join button
+            document.getElementById('joinInstantCall').onclick = function() {
+                joinInstantCall(call);
+            };
+            
+            // Auto-hide after 60 seconds if not responded to
+            setTimeout(() => {
+                if (document.getElementById('instantCallModal').style.display !== 'none') {
+                    closeInstantCallModal();
+                }
+            }, 60000);
+        }
+        
+        function closeInstantCallModal() {
+            document.getElementById('instantCallModal').style.display = 'none';
+        }
+        
+        function declineInstantCall() {
+            closeInstantCallModal();
+            alert('You declined the instant video call.');
+        }
+        
+        function joinInstantCall(call) {
+            closeInstantCallModal();
+            
+            // Store call data in session storage
+            sessionStorage.setItem('currentCall', JSON.stringify(call));
+            
+            // Open video call interface in new tab
+            const videoCallUrl = `video-call.html?roomId=${call.roomId}&userType=patient`;
+            window.open(videoCallUrl, '_blank');
+            
+            // Note: We don't need to update status to 'joined' since it's already 'in-progress'
+            // The call status will be updated when the call actually starts
+        }
+        
+        function showIncomingCallNotification(call) {
+            const message = `Incoming video call from Dr. ${call.doctorName} in 2 minutes!\n\nPurpose: ${call.callPurpose}\nDuration: ${call.callDuration} minutes\n\nWould you like to join the call?`;
+            
+            if (confirm(message)) {
+                // For now, just show a message. In a full implementation, this would open the video call interface
+                alert('Video call feature is ready! The call will start automatically when the doctor initiates it.');
+            }
+        }
+    </script>
+</body>
+</html>

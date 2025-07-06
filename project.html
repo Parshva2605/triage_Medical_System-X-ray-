@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Workspace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .panel {
+            padding: 15px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+        }
+        .chat-panel {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+        }
+        .files-panel {
+            width: 20%;
+        }
+        .preview-panel {
+            flex: 1;
+        }
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #e1f5fe;
+            align-self: flex-end;
+        }
+        .ai-message {
+            background-color: #f0f4c3;
+        }
+        .message-input {
+            display: flex;
+            margin-top: 10px;
+        }
+        .message-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .message-input button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .file-item:hover {
+            background-color: #f0f0f0;
+        }
+        .file-item.active {
+            background-color: #e0e0e0;
+        }
+        .collaborators {
+            margin-top: 20px;
+        }
+        .add-collaborator {
+            margin-top: 10px;
+        }
+        .add-collaborator input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 70%;
+        }
+        .add-collaborator button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .code-preview {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .back-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .user-display {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .message-sender {
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        .message-content {
+            margin-bottom: 3px;
+        }
+        .message-time {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="back-btn" id="back-btn">Back to Dashboard</button>
+        <h1 id="project-name">Project Name</h1>
+        <div class="user-display" id="user-display">Welcome, User</div>
+    </header>
+    
+    <div class="workspace">
+        <div class="panel chat-panel">
+            <h2>Chat</h2>
+            <div class="messages-container" id="messages-container">
+                <!-- Messages will be loaded here -->
+            </div>
+            <div class="message-input">
+                <input type="text" id="message-input" placeholder="Type a message... (use @ for AI assistance)">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+        
+        <div class="panel files-panel">
+            <h2>Files</h2>
+            <ul class="file-list" id="file-list">
+                <!-- Files will be loaded here -->
+            </ul>
+            
+            <div class="collaborators">
+                <h3>Collaborators</h3>
+                <ul id="collaborators-list">
+                    <!-- Collaborators will be loaded here -->
+                </ul>
+                <div class="add-collaborator">
+                    <input type="email" id="collaborator-email" placeholder="Enter email">
+                    <button id="add-collaborator-btn">Add</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel preview-panel">
+            <h2>Preview</h2>
+            <div class="code-preview" id="code-preview">
+                <!-- Code preview will be shown here -->
+                Select a file to view its contents
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Get project ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+        let currentUser = null;
+        let socket = null;
+        
+        // Check if user is logged in and project ID is valid
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!projectId) {
+                window.location.href = '/home.html';
+                return;
+            }
+            
+            // Fetch user data
+            fetch('/api/user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    window.location.href = '/index.html';
+                    throw new Error('Not authenticated');
+                }
+                return response.json();
+            })
+            .then(user => {
+                currentUser = user;
+                
+                // Display username in the header
+                document.getElementById('user-display').textContent = `Welcome, ${user.username}`;
+                
+                // Fetch project data
+                return fetch(`/api/projects/${projectId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    window.location.href = '/home.html';
+                    throw new Error('Project not found or not authorized');
+                }
+                return response.json();
+            })
+            .then(project => {
+                // Update UI with project data
+                document.getElementById('project-name').textContent = project.name;
+                
+                // Initialize Socket.io connection
+                initializeSocket();
+                
+                // Load files
+                loadFiles();
+                
+                // Load messages
+                loadMessages();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+        
+        // Back button
+        document.getElementById('back-btn').addEventListener('click', function() {
+            window.location.href = '/home.html';
+        });
+        
+        // Initialize Socket.io
+        function initializeSocket() {
+            socket = io();
+            
+            // Join project room
+            socket.emit('join-project', projectId);
+            
+            // Listen for new messages
+            socket.on('new-message', function(message) {
+                appendMessage(message);
+            });
+            
+            // Listen for new files
+            socket.on('new-file', function(file) {
+                appendFile(file);
+            });
+        }
+        
+        // Load files
+        function loadFiles() {
+            fetch(`/api/projects/${projectId}/files`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(files => {
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = '';
+                
+                if (files.length === 0) {
+                    fileList.innerHTML = '<li>No files yet</li>';
+                    return;
+                }
+                
+                files.forEach(file => {
+                    appendFile(file);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading files:', error);
+            });
+        }
+        
+        // Append file to list
+        function appendFile(file) {
+            const fileList = document.getElementById('file-list');
+            
+            // Check if file already exists in the list
+            const existingFile = document.getElementById(`file-${file._id}`);
+            if (existingFile) {
+                return;
+            }
+            
+            const fileItem = document.createElement('li');
+            fileItem.className = 'file-item';
+            fileItem.id = `file-${file._id}`;
+            fileItem.textContent = file.name;
+            
+            fileItem.addEventListener('click', function() {
+                // Remove active class from all files
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked file
+                fileItem.classList.add('active');
+                
+                // Load file content
+                fetch(`/api/files/${file._id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                })
+                .then(response => response.json())
+                .then(fileData => {
+                    document.getElementById('code-preview').textContent = fileData.content;
+                })
+                .catch(error => {
+                    console.error('Error loading file content:', error);
+                });
+            });
+            
+            fileList.appendChild(fileItem);
+        }
+        
+        // Load messages
+        function loadMessages() {
+            fetch(`/api/projects/${projectId}/messages`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(messages => {
+                const messagesContainer = document.getElementById('messages-container');
+                messagesContainer.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    messagesContainer.innerHTML = '<div class="message">No messages yet</div>';
+                    return;
+                }
+                
+                messages.forEach(message => {
+                    appendMessage(message);
+                });
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error loading messages:', error);
+            });
+        }
+        
+        // Append message to chat - improved version with clearer sender information
+        function appendMessage(message) {
+            const messagesContainer = document.getElementById('messages-container');
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${message.isAiPrompt ? 'ai-message' : 'user-message'}`;
+            
+            const sender = message.sender.username === currentUser.username ? 'You' : message.sender.username;
+            messageElement.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div class="message-content">${message.content}</div>
+                <div class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Send message
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // In your project.html file, update the sendMessage function
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const content = messageInput.value.trim();
+            
+            if (!content) {
+                return;
+            }
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // If it's an AI prompt, show a loading message
+            if (content.startsWith('@')) {
+                const loadingMessage = document.createElement('div');
+                loadingMessage.className = 'message user-message';
+                loadingMessage.innerHTML = `
+                    <div class="message-sender">You</div>
+                    <div class="message-content">${content}</div>
+                    <div class="message-time">Generating AI response...</div>
+                `;
+                document.getElementById('messages-container').appendChild(loadingMessage);
+                document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
+            }
+            
+            // Send message via Socket.io
+            socket.emit('send-message', {
+                projectId,
+                userId: currentUser._id,
+                content
+            });
+        }
+        
+        // Add collaborator
+        document.getElementById('add-collaborator-btn').addEventListener('click', function() {
+            const email = document.getElementById('collaborator-email').value.trim();
+            
+            if (!email) {
+                return;
+            }
+            
+            fetch(`/api/projects/${projectId}/collaborators`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to add collaborator');
+                }
+                return response.json();
+            })
+            .then(() => {
+                // Clear input
+                document.getElementById('collaborator-email').value = '';
+                
+                // Show success message
+                alert('Collaborator added successfully');
+            })
+            .catch(error => {
+                console.error('Error adding collaborator:', error);
+                alert('Error adding collaborator. Make sure the email is registered.');
+            });
+        });
+    </script>
+</body>
+</html>

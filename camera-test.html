@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera & Microphone Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .test-area {
+            margin: 30px 0;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f0f0f0;
+            aspect-ratio: 16/9;
+        }
+        
+        #testVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 18px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #219a52;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .device-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .device-info h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .device-item:last-child {
+            border-bottom: none;
+        }
+        
+        .device-name {
+            font-weight: 500;
+        }
+        
+        .device-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .back-btn {
+            margin-top: 30px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            transition: background 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">📹 Camera & Microphone Test</h1>
+        <p class="description">
+            Test your camera and microphone before joining video calls. This helps ensure everything works properly.
+        </p>
+        
+        <div class="test-area">
+            <div class="video-container">
+                <video id="testVideo" autoplay muted playsinline></video>
+                <div id="videoPlaceholder" class="video-placeholder">
+                    Click "Start Test" to see your camera
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="startTest" class="btn btn-primary">Start Test</button>
+                <button id="stopTest" class="btn btn-secondary" disabled>Stop Test</button>
+            </div>
+            
+            <div id="status" class="status info" style="display: none;">
+                Ready to test your camera and microphone
+            </div>
+        </div>
+        
+        <div class="device-info">
+            <h3>Device Information</h3>
+            <div id="deviceList">
+                <div class="device-item">
+                    <span class="device-name">Checking devices...</span>
+                    <span class="device-status status-unavailable">Loading</span>
+                </div>
+            </div>
+        </div>
+        
+        <a href="patient-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <script>
+        let testStream = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check available devices
+            checkDevices();
+            
+            // Set up event listeners
+            document.getElementById('startTest').addEventListener('click', startTest);
+            document.getElementById('stopTest').addEventListener('click', stopTest);
+        });
+        
+        async function checkDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const deviceList = document.getElementById('deviceList');
+                
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const audioDevices = devices.filter(device => device.kind === 'audioinput');
+                
+                deviceList.innerHTML = '';
+                
+                // Add video devices
+                if (videoDevices.length > 0) {
+                    videoDevices.forEach(device => {
+                        addDeviceItem(device.label || `Camera ${device.deviceId.slice(0, 8)}`, 'Available');
+                    });
+                } else {
+                    addDeviceItem('Camera', 'Not Found');
+                }
+                
+                // Add audio devices
+                if (audioDevices.length > 0) {
+                    audioDevices.forEach(device => {
+                        addDeviceItem(device.label || `Microphone ${device.deviceId.slice(0, 8)}`, 'Available');
+                    });
+                } else {
+                    addDeviceItem('Microphone', 'Not Found');
+                }
+                
+            } catch (error) {
+                console.error('Error checking devices:', error);
+                document.getElementById('deviceList').innerHTML = 
+                    '<div class="device-item"><span class="device-name">Error checking devices</span><span class="device-status status-unavailable">Error</span></div>';
+            }
+        }
+        
+        function addDeviceItem(name, status) {
+            const deviceList = document.getElementById('deviceList');
+            const item = document.createElement('div');
+            item.className = 'device-item';
+            item.innerHTML = `
+                <span class="device-name">${name}</span>
+                <span class="device-status ${status === 'Available' ? 'status-available' : 'status-unavailable'}">${status}</span>
+            `;
+            deviceList.appendChild(item);
+        }
+        
+        async function startTest() {
+            const startBtn = document.getElementById('startTest');
+            const stopBtn = document.getElementById('stopTest');
+            const status = document.getElementById('status');
+            const video = document.getElementById('testVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            
+            startBtn.disabled = true;
+            status.style.display = 'block';
+            status.className = 'status info';
+            status.textContent = 'Requesting camera and microphone access...';
+            
+            try {
+                // Check if getUserMedia is supported
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Camera and microphone access is not supported in this browser');
+                }
+                
+                // Request access
+                testStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: 'user'
+                    },
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+                
+                // Show video
+                video.srcObject = testStream;
+                placeholder.style.display = 'none';
+                video.style.display = 'block';
+                
+                // Update UI
+                stopBtn.disabled = false;
+                status.className = 'status success';
+                status.textContent = '✅ Camera and microphone are working! You can see yourself in the video above.';
+                
+                // Check audio levels
+                checkAudioLevels();
+                
+            } catch (error) {
+                console.error('Test failed:', error);
+                
+                let errorMessage = '❌ Could not access camera/microphone. ';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += 'Please allow camera and microphone access when prompted.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += 'No camera or microphone found. Please check your device.';
+                } else if (error.name === 'NotSupportedError') {
+                    errorMessage += 'Your browser does not support video calls. Please use Chrome, Firefox, or Safari.';
+                } else {
+                    errorMessage += 'Please check your camera and microphone permissions.';
+                }
+                
+                status.className = 'status error';
+                status.textContent = errorMessage;
+                startBtn.disabled = false;
+            }
+        }
+        
+        function stopTest() {
+            if (testStream) {
+                testStream.getTracks().forEach(track => track.stop());
+                testStream = null;
+            }
+            
+            const video = document.getElementById('testVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            const startBtn = document.getElementById('startTest');
+            const stopBtn = document.getElementById('stopTest');
+            const status = document.getElementById('status');
+            
+            video.style.display = 'none';
+            placeholder.style.display = 'flex';
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            status.className = 'status info';
+            status.textContent = 'Test stopped. Click "Start Test" to test again.';
+        }
+        
+        function checkAudioLevels() {
+            if (!testStream) return;
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioContext.createMediaStreamSource(testStream);
+            const analyser = audioContext.createAnalyser();
+            
+            source.connect(analyser);
+            analyser.fftSize = 256;
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function checkLevel() {
+                if (!testStream) return;
+                
+                analyser.getByteFrequencyData(dataArray);
+                const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+                
+                if (average > 10) {
+                    // Audio is working
+                    console.log('Audio levels detected:', average);
+                }
+                
+                requestAnimationFrame(checkLevel);
+            }
+            
+            checkLevel();
+        }
+    </script>
+</body>
+</html> 

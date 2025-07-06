@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #27ae60;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .welcome-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .user-info {
+            margin-top: 15px;
+        }
+        .user-info p {
+            margin: 8px 0;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 120px;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #27ae60;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        /* Patient submissions */
+        .submissions-container {
+            margin-top: 20px;
+        }
+        .submission-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .submission-patient-info {
+            font-weight: bold;
+        }
+        .submission-date {
+            color: #7f8c8d;
+        }
+        .submission-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background-color: #f39c12;
+            color: white;
+        }
+        .status-reviewed {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .submission-details {
+            margin-bottom: 15px;
+        }
+        .submission-section {
+            margin-bottom: 10px;
+        }
+        .submission-section h4 {
+            margin: 0 0 5px 0;
+            color: #34495e;
+        }
+        .symptoms-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .symptom-tag {
+            background-color: #f0f4ff;
+            color: #556cd6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .xray-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .xray-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .pneumonia-result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .chest-analysis-result {
+            margin-top: 10px;
+            font-weight: bold;
+            line-height: 1.4;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .result-positive {
+            color: #e74c3c;
+        }
+        .result-negative {
+            color: #2ecc71;
+        }
+        .result-pending {
+            color: #f39c12;
+        }
+        .submission-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .view-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        .diagnose-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        .video-chat-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-title {
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .prescription-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .prescription-form input,
+        .prescription-form textarea,
+        .prescription-form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .medication-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .medication-input {
+            flex: 1;
+        }
+        .add-medication-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .submit-prescription-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+        .empty-state p {
+            color: #95a5a6;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .prescription-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .medication-entry {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        
+        .remove-medication {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        .medications-container {
+            margin-bottom: 20px;
+        }
+        
+        #add-medication {
+            margin-bottom: 20px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        /* Video Chat Styles */
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+        
+        .video-item {
+            position: relative;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .call-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .control-btn.end-call {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .control-btn:not(.end-call) {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .control-btn.muted {
+            background-color: #95a5a6;
+        }
+        
+        .control-icon {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Doctor Dashboard</h1>
+        <button id="logout-btn" class="btn">Logout</button>
+    </header>
+    
+    <div class="container">
+        <div class="welcome-box">
+            <h2>Welcome, Dr. <span id="doctor-name">Doctor</span></h2>
+            <p>Here you can review patient symptom submissions and manage prescriptions.</p>
+            <div class="user-info" id="user-info">
+                <p><span class="label">Name:</span> <span id="name-display"></span></p>
+                <p><span class="label">Email:</span> <span id="email-display"></span></p>
+                <p><span class="label">Specialization:</span> <span id="specialization-display"></span></p>
+                <p><span class="label">License Number:</span> <span id="license-display"></span></p>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="submissions">Patient Submissions</div>
+            <div class="tab" data-tab="prescriptions">Manage Prescriptions</div>
+        </div>
+        
+        <!-- Patient Submissions Tab -->
+        <div id="submissions-tab" class="tab-content">
+            <h3>Recent Patient Submissions</h3>
+            
+            <div class="submissions-container" id="submissions-container">
+                <!-- Submission cards will be loaded here -->
+            </div>
+            
+            <!-- Empty state for no submissions -->
+            <div class="empty-state" id="no-submissions" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3>No Patient Submissions Yet</h3>
+                <p>When patients submit their symptoms and X-rays, they will appear here for your review.</p>
+            </div>
+        </div>
+        
+        <!-- Prescriptions Tab -->
+        <div id="prescriptions-tab" class="tab-content" style="display: none;">
+            <h3>Manage Prescriptions</h3>
+            <p>Create and view patient prescriptions here.</p>
+            <!-- Prescription management UI would go here -->
+        </div>
+        
+        <!-- Diagnosis Modal -->
+        <div id="diagnosis-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 class="modal-title">Create Prescription</h2>
+                <form id="prescription-form" class="prescription-form">
+                    <input type="hidden" id="patient-id" name="patientId">
+                    
+                    <label for="prescription-title">Prescription Title</label>
+                    <input type="text" id="prescription-title" name="title" placeholder="e.g., Pneumonia Treatment" required>
+                    
+                    <label for="diagnosis">Diagnosis</label>
+                    <textarea id="diagnosis" name="diagnosis" rows="3" placeholder="Patient diagnosis details" required></textarea>
+                    
+                    <h4>Medications</h4>
+                    <div id="medications-container">
+                        <div class="medication-item">
+                            <div class="medication-input">
+                                <input type="text" name="medications[0][name]" placeholder="Medication name" required>
+                            </div>
+                            <div class="medication-input">
+                                <input type="text" name="medications[0][dosage]" placeholder="Dosage" required>
+                            </div>
+                            <div class="medication-input">
+                                <input type="text" name="medications[0][frequency]" placeholder="Frequency" required>
+                            </div>
+                            <div class="medication-input">
+                                <input type="text" name="medications[0][instructions]" placeholder="Instructions" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="add-medication-btn" class="add-medication-btn">Add Another Medication</button>
+                    
+                    <label for="additional-instructions">Additional Instructions</label>
+                    <textarea id="additional-instructions" name="additionalInstructions" rows="3" placeholder="Additional instructions for the patient"></textarea>
+                    
+                    <label for="expiry-date">Prescription Valid Until</label>
+                    <input type="date" id="expiry-date" name="expiryDate" required>
+                    
+                    <button type="submit" class="submit-prescription-btn">Create Prescription</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Prescription Form in Submission Details -->
+        <div class="prescription-section" style="display:none;" id="prescription-form-container">
+            <h3>Create Prescription</h3>
+            <form id="prescription-form">
+                <input type="hidden" id="patient-id" name="patientId">
+                
+                <div class="form-group">
+                    <label for="prescription-title">Prescription Title</label>
+                    <input type="text" id="prescription-title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="diagnosis">Diagnosis</label>
+                    <textarea id="diagnosis" name="diagnosis" required></textarea>
+                </div>
+                
+                <div class="medications-container">
+                    <h4>Medications</h4>
+                    <div id="medications-list">
+                        <div class="medication-entry">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Medication Name</label>
+                                    <input type="text" name="medication-name[]" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Dosage</label>
+                                    <input type="text" name="medication-dosage[]" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Frequency</label>
+                                    <input type="text" name="medication-frequency[]" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Instructions</label>
+                                    <input type="text" name="medication-instructions[]" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="add-medication">Add Another Medication</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="additional-instructions">Additional Instructions</label>
+                    <textarea id="additional-instructions" name="additionalInstructions"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expiry-date">Valid Until</label>
+                    <input type="date" id="expiry-date" name="expiryDate" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn">Create Prescription</button>
+                    <button type="button" class="btn btn-secondary" onclick="togglePrescriptionForm(false)">Cancel</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Video Chat Modal -->
+        <div id="video-chat-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeVideoChatModal()">&times;</span>
+                <h2 class="modal-title">Schedule Video Call</h2>
+                
+                <form id="video-chat-form">
+                    <div class="form-group">
+                        <label>Patient Name</label>
+                        <input type="text" id="video-patient-name" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Patient ID</label>
+                        <input type="text" id="video-patient-id" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Call Date & Time</label>
+                        <input type="datetime-local" id="call-datetime" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Call Duration (minutes)</label>
+                        <select id="call-duration" required>
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">60 minutes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Call Purpose</label>
+                        <textarea id="call-purpose" placeholder="Brief description of the call purpose..." required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="submit-prescription-btn">Schedule Call</button>
+                        <button type="button" class="btn-secondary" onclick="closeVideoChatModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Call Modal -->
+        <div id="active-call-modal" class="modal">
+            <div class="modal-content" style="max-width: 90%; height: 80%;">
+                <span class="close-btn" onclick="endCall()">&times;</span>
+                <h2 class="modal-title">Video Call in Progress</h2>
+                
+                <div class="video-container">
+                    <div class="video-grid">
+                        <div class="video-item">
+                            <video id="local-video" autoplay muted></video>
+                            <div class="video-label">You (Doctor)</div>
+                        </div>
+                        <div class="video-item">
+                            <video id="remote-video" autoplay></video>
+                            <div class="video-label">Patient</div>
+                        </div>
+                    </div>
+                    
+                    <div class="call-controls">
+                        <button id="mute-btn" class="control-btn" onclick="toggleMute()">
+                            <span class="control-icon">🔇</span> Mute
+                        </button>
+                        <button id="video-btn" class="control-btn" onclick="toggleVideo()">
+                            <span class="control-icon">📹</span> Video
+                        </button>
+                        <button id="end-call-btn" class="control-btn end-call" onclick="endCall()">
+                            <span class="control-icon">📞</span> End Call
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication and load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch doctor info
+            fetch('/api/user', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Not authenticated');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.userType !== 'doctor') {
+                    window.location.href = '/index.html';
+                    return;
+                }
+                
+                // Display doctor information
+                const doctor = data.user;
+                document.getElementById('doctor-name').textContent = doctor.fullName.split(' ')[0];
+                document.getElementById('name-display').textContent = doctor.fullName;
+                document.getElementById('email-display').textContent = doctor.email;
+                document.getElementById('specialization-display').textContent = doctor.specialization;
+                document.getElementById('license-display').textContent = doctor.licenseNumber;
+                
+                // Load patient submissions
+                loadPatientSubmissions();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.location.href = '/index.html';
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Update active tab
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected tab content
+                    const tabName = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(`${tabName}-tab`).style.display = 'block';
+                });
+            });
+            
+            // Modal functionality
+            const modal = document.getElementById('diagnosis-modal');
+            const closeBtn = document.querySelector('.close-btn');
+            
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Add medication button
+            document.getElementById('add-medication-btn').addEventListener('click', function() {
+                const container = document.getElementById('medications-container');
+                const medicationCount = container.children.length;
+                
+                const newMedication = document.createElement('div');
+                newMedication.className = 'medication-item';
+                newMedication.innerHTML = `
+                    <div class="medication-input">
+                        <input type="text" name="medications[${medicationCount}][name]" placeholder="Medication name" required>
+                    </div>
+                    <div class="medication-input">
+                        <input type="text" name="medications[${medicationCount}][dosage]" placeholder="Dosage" required>
+                    </div>
+                    <div class="medication-input">
+                        <input type="text" name="medications[${medicationCount}][frequency]" placeholder="Frequency" required>
+                    </div>
+                    <div class="medication-input">
+                        <input type="text" name="medications[${medicationCount}][instructions]" placeholder="Instructions" required>
+                    </div>
+                `;
+                
+                container.appendChild(newMedication);
+            });
+            
+            // Prescription form submission
+            document.getElementById('prescription-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const prescriptionData = {
+                    patientId: formData.get('patientId'),
+                    title: formData.get('title'),
+                    diagnosis: formData.get('diagnosis'),
+                    additionalInstructions: formData.get('additionalInstructions'),
+                    expiryDate: formData.get('expiryDate'),
+                    medications: []
+                };
+                
+                // Get all medications
+                const medicationItems = document.querySelectorAll('.medication-item');
+                medicationItems.forEach((item, index) => {
+                    prescriptionData.medications.push({
+                        name: formData.get(`medications[${index}][name]`),
+                        dosage: formData.get(`medications[${index}][dosage]`),
+                        frequency: formData.get(`medications[${index}][frequency]`),
+                        instructions: formData.get(`medications[${index}][instructions]`)
+                    });
+                });
+                
+                // Submit prescription
+                fetch('/api/doctor/prescriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(prescriptionData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Prescription created successfully');
+                        modal.style.display = 'none';
+                        
+                        // Reset form
+                        document.getElementById('prescription-form').reset();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error creating prescription:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+            
+            // Add event listeners to the diagnose buttons
+            document.querySelectorAll('.diagnose-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const patientId = this.getAttribute('data-patient');
+                    document.getElementById('patient-id').value = patientId;
+                    
+                    // Set default expiry date (30 days from now)
+                    const expiryDate = new Date();
+                    expiryDate.setDate(expiryDate.getDate() + 30);
+                    document.getElementById('expiry-date').value = expiryDate.toISOString().split('T')[0];
+                    
+                    // Show modal
+                    document.getElementById('diagnosis-modal').style.display = 'block';
+                });
+            });
+            
+            // Add event listeners to the video chat buttons
+            document.querySelectorAll('.video-chat-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const patientId = this.getAttribute('data-patient');
+                    const patientName = this.getAttribute('data-patient-name');
+                    
+                    document.getElementById('video-patient-id').value = patientId;
+                    document.getElementById('video-patient-name').value = patientName;
+                    
+                    // Set default call time (1 hour from now)
+                    const callTime = new Date();
+                    callTime.setHours(callTime.getHours() + 1);
+                    document.getElementById('call-datetime').value = callTime.toISOString().slice(0, 16);
+                    
+                    // Show video chat modal
+                    document.getElementById('video-chat-modal').style.display = 'block';
+                });
+            });
+        });
+        
+        // Load patient submissions
+        function loadPatientSubmissions() {
+            fetch('/api/doctor/symptom-submissions', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('submissions-container');
+                    const emptyState = document.getElementById('no-submissions');
+                    
+                    if (data.submissions.length === 0) {
+                        emptyState.style.display = 'block';
+                        container.innerHTML = '';
+                        return;
+                    }
+                    
+                    emptyState.style.display = 'none';
+                    container.innerHTML = '';
+                    
+                    data.submissions.forEach(submission => {
+                        const submissionCard = document.createElement('div');
+                        submissionCard.className = 'submission-card';
+                        
+                        // Format date
+                        const submittedDate = new Date(submission.submittedAt);
+                        const formattedDate = submittedDate.toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        // Get analysis result class
+                        let resultClass = 'result-pending';
+                        if (submission.pneumoniaDetected.includes('Normal Chest X-ray') || submission.pneumoniaDetected.includes('No abnormalities')) {
+                            resultClass = 'result-negative';
+                        } else if (submission.pneumoniaDetected.includes('Detected Conditions') || submission.pneumoniaDetected.includes('Analysis Error')) {
+                            resultClass = 'result-positive';
+                        }
+                        
+                        submissionCard.innerHTML = `
+                            <div class="submission-header">
+                                <div class="submission-patient-info">
+                                    ${submission.patientName} (${submission.patientEmail})
+                                </div>
+                                <div class="submission-date">
+                                    ${formattedDate}
+                                    <span class="submission-status status-${submission.status.toLowerCase()}">${submission.status}</span>
+                                </div>
+                            </div>
+                            <div class="submission-details">
+                                <div class="submission-section">
+                                    <h4>Symptoms</h4>
+                                    <div class="symptoms-list">
+                                        ${submission.symptoms.map(symptom => `
+                                            <span class="symptom-tag">${symptom}</span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="submission-section">
+                                    <h4>Duration</h4>
+                                    <p>${submission.duration || 'Not specified'}</p>
+                                </div>
+                                <div class="submission-section">
+                                    <h4>Chest Pain</h4>
+                                    <p>${submission.chestPain || 'Not specified'}</p>
+                                </div>
+                                <div class="submission-section">
+                                    <h4>Shortness of Breath</h4>
+                                    <p>${submission.shortnessOfBreath || 'Not specified'}</p>
+                                </div>
+                                <div class="submission-section">
+                                    <h4>Medical Conditions</h4>
+                                    <div class="symptoms-list">
+                                        ${submission.medicalConditions && submission.medicalConditions.length > 0 
+                                            ? submission.medicalConditions.map(condition => `
+                                                <span class="symptom-tag">${condition}</span>
+                                            `).join('')
+                                            : 'None reported'}
+                                    </div>
+                                </div>
+                                <div class="submission-section">
+                                    <h4>Additional Information</h4>
+                                    <p>${submission.additionalInfo || 'None provided'}</p>
+                                </div>
+                            </div>
+                            ${submission.xrayImage ? `
+                                <div class="submission-section">
+                                    <h4>Chest X-ray Analysis</h4>
+                                    <div class="xray-section">
+                                        <img src="${submission.xrayImage}" class="xray-image" alt="Patient X-ray">
+                                        <div>
+                                            <p class="chest-analysis-result ${resultClass}">${submission.pneumoniaDetected}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <div class="submission-actions">
+                                <button class="action-btn diagnose-btn" data-id="${submission._id}" data-patient="${submission.patientId}">
+                                    Create Prescription
+                                </button>
+                                <button class="action-btn video-chat-btn" data-patient="${submission.patientId}" data-patient-name="${submission.patientName}">
+                                    Schedule Video Call
+                                </button>
+                                <button class="action-btn instant-video-btn" data-patient="${submission.patientId}" data-patient-name="${submission.patientName}">
+                                    Instant Video Call
+                                </button>
+                            </div>
+                        `;
+                        
+                        container.appendChild(submissionCard);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading submissions:', error);
+            });
+        }
+        
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(() => {
+                window.location.href = '/index.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+            });
+        });
+        
+        // Show/hide prescription form
+        function togglePrescriptionForm(show, patientId = null, patientName = null) {
+            const formContainer = document.getElementById('prescription-form-container');
+            
+            if (show) {
+                formContainer.style.display = 'block';
+                document.getElementById('patient-id').value = patientId;
+                
+                // Set the expiry date default to 30 days from today
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30);
+                document.getElementById('expiry-date').value = expiryDate.toISOString().split('T')[0];
+                
+                // Scroll to the form
+                formContainer.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                formContainer.style.display = 'none';
+                document.getElementById('prescription-form').reset();
+            }
+        }
+        
+        // Add another medication field
+        document.getElementById('add-medication').addEventListener('click', function() {
+            const medicationsList = document.getElementById('medications-list');
+            const newMedication = document.createElement('div');
+            newMedication.className = 'medication-entry';
+            newMedication.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Medication Name</label>
+                        <input type="text" name="medication-name[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Dosage</label>
+                        <input type="text" name="medication-dosage[]" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Frequency</label>
+                        <input type="text" name="medication-frequency[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Instructions</label>
+                        <input type="text" name="medication-instructions[]" required>
+                    </div>
+                </div>
+                <button type="button" class="remove-medication">Remove</button>
+            `;
+            medicationsList.appendChild(newMedication);
+            
+            // Add remove functionality
+            newMedication.querySelector('.remove-medication').addEventListener('click', function() {
+                medicationsList.removeChild(newMedication);
+            });
+        });
+        
+        // Handle prescription form submission
+        document.getElementById('prescription-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get the doctor ID and name from the user info (you need to have these already loaded)
+            const doctorId = currentDoctorId; // You should have this variable defined elsewhere
+            const doctorName = currentDoctorName; // You should have this variable defined elsewhere
+            
+            // Get patient ID
+            const patientId = document.getElementById('patient-id').value;
+            
+            // Get basic prescription info
+            const title = document.getElementById('prescription-title').value;
+            const diagnosis = document.getElementById('diagnosis').value;
+            const additionalInstructions = document.getElementById('additional-instructions').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            
+            // Collect medications
+            const medicationNames = document.getElementsByName('medication-name[]');
+            const medicationDosages = document.getElementsByName('medication-dosage[]');
+            const medicationFrequencies = document.getElementsByName('medication-frequency[]');
+            const medicationInstructions = document.getElementsByName('medication-instructions[]');
+            
+            const medications = [];
+            
+            for (let i = 0; i < medicationNames.length; i++) {
+                medications.push({
+                    name: medicationNames[i].value,
+                    dosage: medicationDosages[i].value,
+                    frequency: medicationFrequencies[i].value,
+                    instructions: medicationInstructions[i].value
+                });
+            }
+            
+            // Create prescription object
+            const prescription = {
+                patientId,
+                doctorId,
+                doctorName,
+                title,
+                diagnosis,
+                medications,
+                additionalInstructions,
+                expiryDate
+            };
+            
+            // Send to server
+            fetch('/api/prescriptions/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(prescription),
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Prescription created successfully');
+                    togglePrescriptionForm(false);
+                    // Reload or update the UI as needed
+                } else {
+                    alert('Error creating prescription: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating the prescription');
+            });
+        });
+        
+        // Video Chat Functions
+        let localStream = null;
+        let remoteStream = null;
+        let peerConnection = null;
+        let isMuted = false;
+        let isVideoEnabled = true;
+        let currentDoctorId = null;
+        let currentDoctorName = null;
+        
+        // Close video chat modal
+        function closeVideoChatModal() {
+            document.getElementById('video-chat-modal').style.display = 'none';
+            document.getElementById('video-chat-form').reset();
+            console.log('Video chat modal closed');
+        }
+        
+        // Handle video chat form submission
+        document.getElementById('video-chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const patientId = document.getElementById('video-patient-id').value;
+            const patientName = document.getElementById('video-patient-name').value;
+            const callDateTime = document.getElementById('call-datetime').value;
+            const callDuration = document.getElementById('call-duration').value;
+            const callPurpose = document.getElementById('call-purpose').value;
+            
+            // Get doctor info from the page
+            const doctorNameElement = document.querySelector('.doctor-name');
+            const doctorName = doctorNameElement ? doctorNameElement.textContent : 'Dr. Unknown';
+            
+            console.log('Video call form data:', {
+                patientId,
+                patientName,
+                callDateTime,
+                callDuration,
+                callPurpose,
+                doctorName
+            });
+            
+            // Create call schedule
+            const callSchedule = {
+                patientId,
+                patientName,
+                callDateTime,
+                callDuration,
+                callPurpose,
+                doctorName,
+                status: 'scheduled'
+            };
+            
+            console.log('Sending call schedule:', callSchedule);
+            
+            // Send to server
+            fetch('/api/schedule-video-call', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(callSchedule),
+                credentials: 'include'
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    alert('Video call scheduled successfully! Patient will be notified.');
+                    closeVideoChatModal();
+                } else {
+                    alert('Error scheduling call: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while scheduling the call');
+            });
+        });
+        
+        // Initialize video call
+        async function startVideoCall(patientId) {
+            try {
+                // Get user media
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
+                });
+                
+                // Display local video
+                document.getElementById('local-video').srcObject = localStream;
+                
+                // Create peer connection
+                peerConnection = new RTCPeerConnection({
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                });
+                
+                // Add local stream to peer connection
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+                
+                // Handle remote stream
+                peerConnection.ontrack = (event) => {
+                    remoteStream = event.streams[0];
+                    document.getElementById('remote-video').srcObject = remoteStream;
+                };
+                
+                // Show active call modal
+                document.getElementById('active-call-modal').style.display = 'block';
+                
+                // Notify patient about incoming call
+                notifyPatient(patientId, 'incoming_call');
+                
+            } catch (error) {
+                console.error('Error starting video call:', error);
+                alert('Could not access camera/microphone. Please check permissions.');
+            }
+        }
+        
+        // End video call
+        function endCall() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            document.getElementById('local-video').srcObject = null;
+            document.getElementById('remote-video').srcObject = null;
+            document.getElementById('active-call-modal').style.display = 'none';
+            
+            // Reset controls
+            isMuted = false;
+            isVideoEnabled = true;
+            updateControlButtons();
+        }
+        
+        // Toggle mute
+        function toggleMute() {
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    audioTrack.enabled = !audioTrack.enabled;
+                    isMuted = !audioTrack.enabled;
+                    updateControlButtons();
+                }
+            }
+        }
+        
+        // Toggle video
+        function toggleVideo() {
+            if (localStream) {
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.enabled = !videoTrack.enabled;
+                    isVideoEnabled = videoTrack.enabled;
+                    updateControlButtons();
+                }
+            }
+        }
+        
+        // Update control button states
+        function updateControlButtons() {
+            const muteBtn = document.getElementById('mute-btn');
+            const videoBtn = document.getElementById('video-btn');
+            
+            if (isMuted) {
+                muteBtn.innerHTML = '<span class="control-icon">🔊</span> Unmute';
+                muteBtn.classList.add('muted');
+            } else {
+                muteBtn.innerHTML = '<span class="control-icon">🔇</span> Mute';
+                muteBtn.classList.remove('muted');
+            }
+            
+            if (!isVideoEnabled) {
+                videoBtn.innerHTML = '<span class="control-icon">📷</span> Enable Video';
+                videoBtn.classList.add('muted');
+            } else {
+                videoBtn.innerHTML = '<span class="control-icon">📹</span> Video';
+                videoBtn.classList.remove('muted');
+            }
+        }
+        
+        // Notify patient (placeholder for WebSocket implementation)
+        function notifyPatient(patientId, type) {
+            // This would typically use WebSocket to notify the patient
+            console.log(`Notifying patient ${patientId} about ${type}`);
+        }
+        
+        // Check for scheduled calls
+        function checkScheduledCalls() {
+            fetch('/api/scheduled-calls', {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.calls.length > 0) {
+                    data.calls.forEach(call => {
+                        const now = new Date();
+                        const callTime = new Date(call.callDateTime);
+                        const timeDiff = callTime - now;
+                        
+                        // If call is within 5 minutes, show notification
+                        if (timeDiff > 0 && timeDiff <= 5 * 60 * 1000) {
+                            showCallNotification(call);
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error checking scheduled calls:', error));
+        }
+        
+        // Show call notification
+        function showCallNotification(call) {
+            if (confirm(`Video call with ${call.patientName} is scheduled to start in 5 minutes. Start call now?`)) {
+                startVideoCall(call.patientId);
+            }
+        }
+        
+        // Check for scheduled calls every minute
+        setInterval(checkScheduledCalls, 60000);
+        
+        // Event delegation for dynamically created buttons
+        document.addEventListener('click', function(e) {
+            // Handle diagnose button clicks
+            if (e.target.classList.contains('diagnose-btn')) {
+                const patientId = e.target.getAttribute('data-patient');
+                document.getElementById('patient-id').value = patientId;
+                
+                // Set default expiry date (30 days from now)
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30);
+                document.getElementById('expiry-date').value = expiryDate.toISOString().split('T')[0];
+                
+                // Show modal
+                document.getElementById('diagnosis-modal').style.display = 'block';
+            }
+            
+            // Handle video chat button clicks
+            if (e.target.classList.contains('video-chat-btn')) {
+                const patientId = e.target.getAttribute('data-patient');
+                const patientName = e.target.getAttribute('data-patient-name');
+                
+                document.getElementById('video-patient-id').value = patientId;
+                document.getElementById('video-patient-name').value = patientName;
+                
+                // Set default call time (1 hour from now)
+                const callTime = new Date();
+                callTime.setHours(callTime.getHours() + 1);
+                document.getElementById('call-datetime').value = callTime.toISOString().slice(0, 16);
+                
+                // Show video chat modal
+                document.getElementById('video-chat-modal').style.display = 'block';
+            }
+            
+            // Handle close button clicks
+            if (e.target.classList.contains('close-btn')) {
+                if (e.target.closest('#video-chat-modal')) {
+                    closeVideoChatModal();
+                }
+            }
+            
+            // Handle instant video call button clicks
+            if (e.target.classList.contains('instant-video-btn')) {
+                const patientId = e.target.getAttribute('data-patient');
+                const patientName = e.target.getAttribute('data-patient-name');
+                const callDuration = 30; // default 30 min
+                const callPurpose = 'Instant meeting';
+                const doctorNameElement = document.querySelector('.doctor-name');
+                const doctorName = doctorNameElement ? doctorNameElement.textContent : 'Dr. Unknown';
+                
+                const instantCallData = {
+                    patientId,
+                    patientName,
+                    callDuration,
+                    callPurpose,
+                    doctorName
+                };
+                
+                fetch('/api/instant-video-call', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(instantCallData),
+                    credentials: 'include'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Instant video call initiated! Patient will receive a popup notification to join.');
+                        
+                        // Store call data in session storage
+                        const callData = {
+                            roomId: data.roomId,
+                            patientName: patientName,
+                            doctorName: doctorName,
+                            callPurpose: callPurpose,
+                            callDuration: callDuration
+                        };
+                        sessionStorage.setItem('currentCall', JSON.stringify(callData));
+                        
+                        // Open video call interface in new tab
+                        const videoCallUrl = `video-call.html?roomId=${data.roomId}&userType=doctor`;
+                        window.open(videoCallUrl, '_blank');
+                    } else {
+                        alert('Error starting instant call: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while starting the instant call');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

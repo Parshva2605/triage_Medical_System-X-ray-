@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediTriage - Sign Up</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .signup-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            transition: background-color 0.3s;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .login-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .form-columns {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-column {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h1>Sign Up</h1>
+        
+        <div class="tabs">
+            <div class="tab active" id="patient-tab">Patient</div>
+            <div class="tab" id="doctor-tab">Doctor</div>
+        </div>
+        
+        <!-- Patient Signup Form -->
+        <form id="patient-form">
+            <div class="form-group">
+                <label for="patient-name">Full Name</label>
+                <input type="text" id="patient-name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="patient-email">Email</label>
+                <input type="email" id="patient-email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="patient-mobile">Mobile Number</label>
+                <input type="tel" id="patient-mobile" name="mobile" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="patient-password">Password</label>
+                <input type="password" id="patient-password" name="password" required>
+            </div>
+            
+            <button type="submit">Sign Up as Patient</button>
+            
+            <div id="patient-error" class="error-message"></div>
+            <div id="patient-success" class="success-message"></div>
+        </form>
+        
+        <!-- Doctor Signup Form -->
+        <form id="doctor-form" style="display: none;">
+            <div class="form-columns">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="doctor-name">Full Name</label>
+                        <input type="text" id="doctor-name" name="fullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-email">Email</label>
+                        <input type="email" id="doctor-email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-password">Password</label>
+                        <input type="password" id="doctor-password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-license">License Number</label>
+                        <input type="text" id="doctor-license" name="licenseNumber" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-specialization">Specialization</label>
+                        <input type="text" id="doctor-specialization" name="specialization" required>
+                    </div>
+                </div>
+                
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="doctor-degrees">Degrees</label>
+                        <input type="text" id="doctor-degrees" name="degrees" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-experience">Years of Experience</label>
+                        <input type="number" id="doctor-experience" name="experience" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-affiliations">Hospital Affiliations</label>
+                        <input type="text" id="doctor-affiliations" name="affiliations" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-hours">Consultation Hours</label>
+                        <input type="text" id="doctor-hours" name="consultationHours" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-contact">Contact Information</label>
+                        <input type="text" id="doctor-contact" name="contactInfo" required>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit">Sign Up as Doctor</button>
+            
+            <div id="doctor-error" class="error-message"></div>
+            <div id="doctor-success" class="success-message"></div>
+        </form>
+        
+        <div class="login-link">
+            Already have an account? <a href="index.html">Login</a>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        const patientTab = document.getElementById('patient-tab');
+        const doctorTab = document.getElementById('doctor-tab');
+        const patientForm = document.getElementById('patient-form');
+        const doctorForm = document.getElementById('doctor-form');
+        
+        patientTab.addEventListener('click', function() {
+            patientTab.classList.add('active');
+            doctorTab.classList.remove('active');
+            patientForm.style.display = 'block';
+            doctorForm.style.display = 'none';
+        });
+        
+        doctorTab.addEventListener('click', function() {
+            doctorTab.classList.add('active');
+            patientTab.classList.remove('active');
+            patientForm.style.display = 'none';
+            doctorForm.style.display = 'block';
+        });
+        
+        // Patient Signup Form Submission
+        document.getElementById('patient-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('patient-name').value;
+            const email = document.getElementById('patient-email').value;
+            const mobile = document.getElementById('patient-mobile').value;
+            const password = document.getElementById('patient-password').value;
+            
+            // Clear previous messages
+            document.getElementById('patient-error').textContent = '';
+            document.getElementById('patient-success').textContent = '';
+            
+            // Disable button during submission
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Signing Up...';
+            
+            fetch('/api/patient/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, mobile, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('patient-error').textContent = data.error;
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                } else {
+                    document.getElementById('patient-success').textContent = 'Registration successful! Redirecting to login...';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                document.getElementById('patient-error').textContent = 'An error occurred. Please try again.';
+                console.error('Error:', error);
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            });
+        });
+        
+        // Doctor Signup Form Submission
+        document.getElementById('doctor-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                fullName: document.getElementById('doctor-name').value,
+                email: document.getElementById('doctor-email').value,
+                password: document.getElementById('doctor-password').value,
+                licenseNumber: document.getElementById('doctor-license').value,
+                specialization: document.getElementById('doctor-specialization').value,
+                degrees: document.getElementById('doctor-degrees').value,
+                experience: document.getElementById('doctor-experience').value,
+                affiliations: document.getElementById('doctor-affiliations').value,
+                consultationHours: document.getElementById('doctor-hours').value,
+                contactInfo: document.getElementById('doctor-contact').value
+            };
+            
+            // Clear previous messages
+            document.getElementById('doctor-error').textContent = '';
+            document.getElementById('doctor-success').textContent = '';
+            
+            // Disable button during submission
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Signing Up...';
+            
+            fetch('/api/doctor/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('doctor-error').textContent = data.error;
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                } else {
+                    document.getElementById('doctor-success').textContent = 'Registration successful! Redirecting to login...';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                document.getElementById('doctor-error').textContent = 'An error occurred. Please try again.';
+                console.error('Error:', error);
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            });
+        });
+    </script>
+</body>
+</html>
